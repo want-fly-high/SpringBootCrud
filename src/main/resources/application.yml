@@ -1,0 +1,25 @@
+server:
+  port: 9090
+  session-timeout: 30
+
+spring:
+  datasource:
+    url: jdbc:oracle:thin:@localhost:1521:orcl
+    username: scott
+    password: tiger
+    driverClassName: oracle.jdbc.OracleDriver
+  jpa:
+    database: Oracle
+    show-sql: true
+  mvc:
+    view:
+      prefix: /
+      suffix: .jsp
+
+mybatis:
+  mapper-locations: classpath*:com/hntest/dao/*.xml
+  type-aliases-package: com.hntest.entity
+
+logging:
+  level:
+    com.hntest.dao: debug

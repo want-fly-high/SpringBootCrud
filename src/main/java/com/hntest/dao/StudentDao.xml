@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hntest.dao.StudentDao">
+    <resultMap id="studentMap" type="Student">
+        <id property="sno" column="sno"/>
+        <result property="sname" column="sname"/>
+        <result property="birthdate" column="birthdate"/>
+        <result property="sPass" column="sPass"/>
+        <association property="grade" resultMap="gradeMap"/>
+    </resultMap>
+    <resultMap id="gradeMap" type="Grade">
+        <id property="gid" column="gid"/>
+        <result property="gname" column="gname"/>
+    </resultMap>
+    <select id="listByPager" parameterType="java.util.Map"  resultMap="studentMap">
+        select rownum rn,s.*,g.gname from t_student s left outer join t_grade g on s.GID=g.GID
+        <where>
+            <if test="stu!=null and stu.sname!=null">
+                and s.sname like '%${stu.sname}%'
+            </if>
+            <if test="stu!=null and stu.grade!=null and stu.grade.gid!=-1">
+                and g.gid=#{stu.grade.gid}
+            </if>
+
+        </where>
+    </select>
+    <select id="getCounts" parameterType="Student"  resultType="int">
+       select count(*) from T_STUDENT s left outer join T_GRADE g on s.GID=g.GID
+      <where>
+          <if test="sname!=null">
+              and s.SNAME like '%${sname}%'
+          </if>
+          <if test="grade!=null and grade.gid!=-1">
+              and g.GID = #{grade.gid}
+          </if>
+      </where>
+    </select>
+    <select id="getAllGrade"   resultType="Grade">
+       select * from T_GRADE
+    </select>
+
+    <delete id="delete" parameterType="int">
+		delete from  t_student where sno=#{sno}
+	</delete>
+    <select id="getStudentBySno" parameterType="int" resultMap="studentMap">
+		SELECT * FROM t_student s LEFT OUTER JOIN t_grade g ON s.gid=g.gid
+		where s.sno=#{sno}
+	</select>
+    <insert id="insert" parameterType="Student" >
+		INSERT INTO t_student(sno,sname,spass,birthdate,gid)
+		 VALUES(SEQ_SNO.nextval,#{sname},#{sPass},#{birthdate},#{grade.gid})
+	</insert>
+
+
+    <update id="update" parameterType="Student">
+        update t_student
+        <set>
+            <if test="sname!=null">
+                sname=#{sname},
+            </if>
+            <if test="sPass!=null">
+                spass=#{sPass},
+            </if>
+            <if test="birthdate!=null">
+                birthdate=#{birthdate},
+            </if>
+            <if test="grade!=null and grade.gid!=-1">
+                gid=#{grade.gid},
+            </if>
+        </set>
+        where sno=#{sno}
+    </update>
+</mapper>
